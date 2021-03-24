@@ -12,45 +12,47 @@ public class Game {
     private Apple a;
     private boolean flag = true;
     private Random rand = new Random();
+    private Frame frame;
 
-    public Game(int height, int width) {
+    public Game(Frame f) {
         score = 0;
-        this.height = height;
-        this.width = width;
+        height = 33;
+        width = 80;
         int[][] temp = { { 9, 4 }, { 9, 5 }, { 9, 6 }, { 9, 7 } };
         int[] temp1 = { 0, -1 };
 
         s = new Snake(temp, temp1);
 
         int randA, randB;
-        boolean f = true;
+        boolean flag = true;
 
         do {
             randA = rand.nextInt(width);
             if (!s.check_x(randA)) {
-                f = false;
+                flag = false;
             }
-        } while (f);
+        } while (flag);
 
-        f = true;
+        flag = true;
 
         do {
             randB = rand.nextInt(height);
             if (!s.check_y(randB)) {
-                f = false;
+                flag = false;
             }
-        } while (f);
+        } while (flag);
 
         a = new Apple(randA, randB);
+
+        frame = f;
         start();
     }
 
-    public void start() {
+    public void start() {// throws InterruptedException {
         Scanner input = new Scanner(System.in);
         int[] direction = new int[2];
         char key;
         render();
-
         do {
             key = input.next().charAt(0);
             input.nextLine();
@@ -90,7 +92,7 @@ public class Game {
             check_app_coll();
 
             render();
-
+            // Thread.sleep(1000);
         } while (flag);
     }
 
@@ -156,13 +158,9 @@ public class Game {
         }
     }
 
-    public int[][] board_matrix() {
-        int[][] mat = { {} };
-
-        return mat;
-    }
-
     public void render() {
+        frame.gameArea.selectAll();
+        frame.gameArea.setText(null);
         System.out.print("+");
         for (int i = 0; i < width; i++) {
             System.out.print("-");
@@ -195,9 +193,4 @@ public class Game {
 
     }
 
-    public static void main(String[] args) {
-        Game g = new Game(10, 20);
-
-        System.out.println("GAME OVER!!!!!!!!!!!");
-    }
 }
