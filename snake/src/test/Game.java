@@ -21,14 +21,34 @@ public class Game {
         int[] temp1 = { 0, -1 };
 
         s = new Snake(temp, temp1);
-        a = new Apple(rand.nextInt(10), rand.nextInt(10));
+
+        int randA, randB;
+        boolean f = true;
+
+        do {
+            randA = rand.nextInt(width);
+            if (!s.check_x(randA)) {
+                f = false;
+            }
+        } while (f);
+
+        f = true;
+
+        do {
+            randB = rand.nextInt(height);
+            if (!s.check_y(randB)) {
+                f = false;
+            }
+        } while (f);
+
+        a = new Apple(randA, randB);
         start();
     }
 
     public void start() {
         Scanner input = new Scanner(System.in);
         int[] direction = new int[2];
-        int key;
+        char key;
         render();
 
         do {
@@ -58,15 +78,54 @@ public class Game {
                 break;
             }
 
-            s.set_direction(direction);
+            if (check_valid_input(key)) {
+                s.set_direction(direction);
+            }
 
-            s.take_step();
+            s.take_step(width, height);
+
+            if (!s.check_bod_coll())
+                break;
 
             check_app_coll();
 
             render();
 
         } while (flag);
+    }
+
+    public boolean check_valid_input(char key) {
+        int[] curr_dir = s.get_dir();
+
+        switch (key) {
+        case 'w':
+            if (curr_dir[1] == 1) {
+                return false;
+            } else {
+                return true;
+            }
+        case 'a':
+            if (curr_dir[0] == 1) {
+                return false;
+            } else {
+                return true;
+            }
+
+        case 's':
+            if (curr_dir[1] == -1) {
+                return false;
+            } else {
+                return true;
+            }
+        case 'd':
+            if (curr_dir[0] == -1) {
+                return false;
+            } else {
+                return true;
+            }
+        default:
+            return false;
+        }
     }
 
     public void check_app_coll() {
@@ -76,7 +135,7 @@ public class Game {
             boolean f = true;
 
             do {
-                new_x = rand.nextInt(10);
+                new_x = rand.nextInt(width);
                 if (!s.check_x(new_x)) {
                     f = false;
                 }
@@ -85,7 +144,7 @@ public class Game {
             f = true;
 
             do {
-                new_y = rand.nextInt(10);
+                new_y = rand.nextInt(height);
                 if (!s.check_y(new_y)) {
                     f = false;
                 }
@@ -93,6 +152,7 @@ public class Game {
 
             a.set_x(new_x);
             a.set_y(new_y);
+            s.add_body();
         }
     }
 
@@ -107,7 +167,8 @@ public class Game {
         for (int i = 0; i < width; i++) {
             System.out.print("-");
         }
-        System.out.println("+");
+        System.out.print("+");
+        System.out.println("\t\tScore: " + score);
 
         for (int i = 0; i < height; i++) {
             System.out.print("|");
@@ -136,5 +197,7 @@ public class Game {
 
     public static void main(String[] args) {
         Game g = new Game(10, 20);
+
+        System.out.println("GAME OVER!!!!!!!!!!!");
     }
 }
