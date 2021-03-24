@@ -29,7 +29,7 @@ class CustomOutputStream extends OutputStream {
 }
 
 class Frame extends JFrame {
-    Controller con;
+    // Controller con;
 
     JFrame frame = new JFrame("Snake");
     JButton restart_Butt = new JButton();
@@ -41,7 +41,7 @@ class Frame extends JFrame {
     JPanel gamePanel = new JPanel();
 
     public Frame() {
-        con = new Controller(this);
+        // con = new Controller(this);
 
         restart_Butt.setText("Start");
         twoPlay_Butt.setText("Two Players");
@@ -96,7 +96,7 @@ class Controller {
 
     public Controller(Frame f) {
         // this.f = f;
-        g = new Game(f);
+        // g = new Game(f);
     }
 
     // public void restartPressed() {
@@ -104,10 +104,9 @@ class Controller {
     // g.render();
     // }
 }
-
-public class Window {
-    public static void main(String[] args) {
-        Frame f = new Frame();
-    }
-
-}
+/*
+ * public class Window { public static void main(String[] args) { Frame f = new
+ * Frame(); }
+ * 
+ * }
+ */

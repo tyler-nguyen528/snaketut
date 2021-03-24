@@ -14,7 +14,7 @@ public class Game {
     private Random rand = new Random();
     private Frame frame;
 
-    public Game(Frame f) {
+    public Game() {
         score = 0;
         height = 33;
         width = 80;
@@ -24,35 +24,35 @@ public class Game {
         s = new Snake(temp, temp1);
 
         int randA, randB;
-        boolean flag = true;
+        boolean f = true;
 
         do {
             randA = rand.nextInt(width);
             if (!s.check_x(randA)) {
-                flag = false;
+                f = false;
             }
-        } while (flag);
+        } while (f);
 
-        flag = true;
+        f = true;
 
         do {
             randB = rand.nextInt(height);
             if (!s.check_y(randB)) {
-                flag = false;
+                f = false;
             }
-        } while (flag);
+        } while (f);
 
         a = new Apple(randA, randB);
-
-        frame = f;
+        frame = new Frame();
         start();
     }
 
-    public void start() {// throws InterruptedException {
+    public void start() {
         Scanner input = new Scanner(System.in);
         int[] direction = new int[2];
         char key;
         render();
+
         do {
             key = input.next().charAt(0);
             input.nextLine();
@@ -92,7 +92,7 @@ public class Game {
             check_app_coll();
 
             render();
-            // Thread.sleep(1000);
+
         } while (flag);
     }
 
@@ -159,7 +159,6 @@ public class Game {
     }
 
     public void render() {
-        frame.gameArea.selectAll();
         frame.gameArea.setText(null);
         System.out.print("+");
         for (int i = 0; i < width; i++) {
@@ -193,4 +192,9 @@ public class Game {
 
     }
 
+    public static void main(String[] args) {
+        Game g = new Game();
+
+        System.out.println("GAME OVER!!!!!!!!!!!");
+    }
 }
