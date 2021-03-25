@@ -20,27 +20,6 @@ public class Game {
         int[] temp1 = { 0, -1 };
 
         s = new Snake(temp, temp1);
-
-        int randA, randB;
-        boolean f = true;
-
-        do {
-            randA = rand.nextInt(width);
-            if (!s.check_x(randA)) {
-                f = false;
-            }
-        } while (f);
-
-        f = true;
-
-        do {
-            randB = rand.nextInt(height);
-            if (!s.check_y(randB)) {
-                f = false;
-            }
-        } while (f);
-
-        a = new Apple(randA, randB);
         // frame = new Frame();
         this.frame = frame;
     }

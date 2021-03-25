@@ -4,30 +4,22 @@ import java.util.ArrayList;
 
 public class Snake {
 
-    private ArrayList<int[]> body = new ArrayList<int[]>();
-    private int[] dir = new int[2];
+    private ArrayList<snake_Bod> body = new ArrayList<snake_Bod>();
+    private int dirx, diry;
 
     public Snake() {
-        int[][] temp = { { 4, 9 }, { 4, 10 }, { 4, 11 }, { 4, 12 } };
+        int[][] temp = { { 9, 4 }, { 9, 5 }, { 9, 6 }, { 9, 7 }, { 9, 8 } };
         for (int i = 0; i < temp.length; i++) {
-            body.add(temp[i]);
+            body.add(new snake_Bod(temp[i][0], temp[i][1]));
         }
 
-        dir[0] = 0;
-        dir[1] = 1; // up
-    }
-
-    public Snake(int[][] init_body, int[] init_direction) {
-        for (int i = 0; i < init_body.length; i++) {
-            body.add(init_body[i]);
-        }
-        dir[0] = init_direction[0];
-        dir[1] = init_direction[1];
+        dirx = 0;
+        diry = -1; // up
     }
 
     public boolean check_yx(int x, int y) {
         for (int i = 1; i < body.size(); i++) {
-            if (body.get(i)[0] == x && body.get(i)[1] == y) {
+            if (body.get(i).getx() == x && body.get(i).gety() == y) {
                 return true;
             }
         }
@@ -36,7 +28,7 @@ public class Snake {
 
     public boolean check_x(int x) {
         for (int i = 0; i < body.size(); i++) {
-            if (x == body.get(i)[0])
+            if (x == body.get(i).getx())
                 return true;
         }
         return false;
@@ -44,34 +36,34 @@ public class Snake {
 
     public boolean check_y(int y) {
         for (int i = 0; i < body.size(); i++) {
-            if (y == body.get(i)[1])
+            if (y == body.get(i).gety())
                 return true;
         }
         return false;
     }
 
     public void take_step(int max_x, int max_y) {
-        int[] new_position = new int[2];
+        int newx, newy;
 
-        new_position[0] = body.get(0)[0] + dir[0];
-        new_position[1] = body.get(0)[1] + dir[1];
+        newx = body.get(0).getx() + dirx;
+        newy = body.get(0).gety() + diry;
 
-        if (new_position[0] <= 0)
-            new_position[0] += max_x;
-        if (new_position[0] >= max_x)
-            new_position[0] -= max_x;
-        if (new_position[1] <= 0)
-            new_position[1] += max_y;
-        if (new_position[1] >= max_y)
-            new_position[1] -= max_y;
+        if (newx <= 0)
+            newx += max_x;
+        if (newx >= max_x)
+            newx -= max_x;
+        if (newy <= 0)
+            newy += max_y;
+        if (newy >= max_y)
+            newy -= max_y;
 
-        body.add(0, new_position);
+        body.add(0, new snake_Bod(newx, newy));
         body.remove(body.size() - 1);
     }
 
     public boolean check_bod_coll() {
         for (int i = 1; i < body.size(); i++) {
-            if (body.get(0)[0] == body.get(i)[0] && body.get(0)[1] == body.get(i)[1]) {
+            if (body.get(0).getx() == body.get(i).getx() && body.get(0).gety() == body.get(i).gety()) {
                 return false;
             }
         }
@@ -79,36 +71,37 @@ public class Snake {
     }
 
     public void set_direction(int[] new_direction) {
-        dir[0] = new_direction[0];
-        dir[1] = new_direction[1];
+        dirx = new_direction[0];
+        diry = new_direction[1];
     }
 
     public boolean check_head(int x, int y) {
-        if (body.get(0)[0] == x && body.get(0)[1] == y) {
+        if (body.get(0).getx() == x && body.get(0).gety() == y) {
             return true;
         } else
             return false;
     }
 
     public int get_head_x() {
-        return body.get(0)[0];
+        return body.get(0).getx();
     }
 
     public int get_head_y() {
-        return body.get(0)[1];
+        return body.get(0).gety();
     }
 
     public void add_body() {
-        int[] tail_seg = body.get(body.size() - 1);
-        int[] new_seg = new int[2];
+        snake_Bod tail = body.get(body.size() - 1);
+        snake_Bod new_Bod = new snake_Bod(tail.getx() - dirx, tail.gety() - diry);
 
-        new_seg[0] = tail_seg[0] - dir[0];
-        new_seg[1] = tail_seg[1] - dir[1];
-
-        body.add(body.size(), new_seg);
+        body.add(body.size(), new_Bod);
     }
 
-    public int[] get_dir() {
-        return dir;
+    public int get_dirx() {
+        return dirx;
+    }
+
+    public int get_diry() {
+        return diry;
     }
 }
