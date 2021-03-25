@@ -1,3 +1,10 @@
 # snaketut
 
-This a project to recreate snake in java. First version will be in a terminal, will probably extend it into a actual UI.
+MASTER BRANCH
+Terminal version of snake. Refreshes every move, you have to press enter. (W A S D only)
+
+UI BRANCH
+Attempting to implement this version using Swing.
+
+    V1.0
+    Working, all collisions working. No buttons work except for start at the very beginning. Game ends when you hit yourself.

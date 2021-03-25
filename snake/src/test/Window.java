@@ -1,18 +1,14 @@
-package test;
+package snake.src.test;
 
 //import java.lang.*;
 
 import java.awt.*;
 import java.awt.event.*;
-import java.awt.Graphics;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
-
-import java.util.*;
 
 class CustomOutputStream extends OutputStream {
     private JTextArea textArea;

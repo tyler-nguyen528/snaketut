@@ -1,6 +1,5 @@
-package test;
+package snake.src.test;
 
-import java.util.Scanner;
 import java.util.Random;
 
 public class Game {

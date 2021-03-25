@@ -1,4 +1,4 @@
-package test;
+package snake.src.test;
 
 public class Apple {
 
