@@ -1,5 +1,7 @@
 package test;
 
+//import java.lang.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.awt.Graphics;
@@ -29,7 +31,8 @@ class CustomOutputStream extends OutputStream {
 }
 
 class Frame extends JFrame {
-    // Controller con;
+    Controller con;
+    Game g;
 
     JFrame frame = new JFrame("Snake");
     JButton restart_Butt = new JButton();
@@ -39,9 +42,10 @@ class Frame extends JFrame {
     JPanel buttonsPanel = new JPanel();
     JTextArea gameArea = new JTextArea();
     JPanel gamePanel = new JPanel();
+    PrintStream printStream = new PrintStream(new CustomOutputStream(gameArea));
 
     public Frame() {
-        // con = new Controller(this);
+        con = new Controller(this);
 
         restart_Butt.setText("Start");
         twoPlay_Butt.setText("Two Players");
@@ -56,18 +60,39 @@ class Frame extends JFrame {
         buttonsPanel.setLayout(null);
         buttonsPanel.setBounds(0, 0, 785, 20);
 
+        twoPlay_Butt.setEnabled(false);
+        hardMode_Butt.setEnabled(false);
+        normMode_Butt.setEnabled(false);
+
         buttonsPanel.add(restart_Butt);
         buttonsPanel.add(twoPlay_Butt);
         buttonsPanel.add(hardMode_Butt);
         buttonsPanel.add(normMode_Butt);
 
-        // restart_Butt.addActionListener(new ActionListener() {
-        // public void actionPerformed(ActionEvent e) {
-        // restart_Butt.setText("Restart");
-        // con.restartPressed();
-        // }
-        // });
+        restart_Butt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                restart_Butt.setText("Restart");
+                restart_Butt.setEnabled(false);
+                con.restartPressed();
 
+            }
+        });
+        gameArea.addKeyListener(new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_W) {
+                    con.w_Press();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_A) {
+                    con.a_Press();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_S) {
+                    con.s_Press();
+                }
+                if (e.getKeyCode() == KeyEvent.VK_D) {
+                    con.d_Press();
+                }
+            }
+        });
         frame.add(buttonsPanel);
 
         gameArea.setLayout(null);
@@ -76,7 +101,7 @@ class Frame extends JFrame {
         gameArea.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         gameArea.setEditable(false);
         gameArea.setFont(new Font("monospaced", Font.PLAIN, 12));
-        PrintStream printStream = new PrintStream(new CustomOutputStream(gameArea));
+
         System.setOut(printStream);
         gamePanel.add(gameArea);
         gamePanel.setLayout(null);
@@ -90,23 +115,67 @@ class Frame extends JFrame {
     }
 }
 
-class Controller {
-    private Game g;
-    Frame f;
+class Threadtest implements Runnable {
+    Game g;
 
-    public Controller(Frame f) {
-        // this.f = f;
-        // g = new Game(f);
+    public Threadtest(Game g) {
+        this.g = g;
     }
 
-    // public void restartPressed() {
-    // f.clearPanel();
-    // g.render();
-    // }
+    public void run() {
+        while (true) {
+            if (!g.tick())
+                break;
+            try {
+                Thread.sleep(250);
+            } catch (InterruptedException e) {
+            }
+        }
+        System.out.println("GAME OVER!!!!!!!!");
+    }
 }
-/*
- * public class Window { public static void main(String[] args) { Frame f = new
- * Frame(); }
- * 
- * }
- */
+
+class Controller {
+    private Game g;
+    Thread t;
+
+    public Controller(Frame f) {
+        g = new Game(f);
+    }
+
+    public void restartPressed() {
+        t = new Thread(new Threadtest(g));
+        t.start();
+
+    }
+
+    public void w_Press() {
+        int[] temp = { 0, -1 };
+        if (g.check_valid_input('w'))
+            g.set_direction(temp);
+    }
+
+    public void a_Press() {
+        int[] temp = { -1, 0 };
+        if (g.check_valid_input('a'))
+            g.set_direction(temp);
+    }
+
+    public void s_Press() {
+        int[] temp = { 0, 1 };
+        if (g.check_valid_input('s'))
+            g.set_direction(temp);
+    }
+
+    public void d_Press() {
+        int[] temp = { 1, 0 };
+        if (g.check_valid_input('d'))
+            g.set_direction(temp);
+    }
+}
+
+public class Window {
+    public static void main(String[] args) {
+        Frame f = new Frame();
+    }
+}

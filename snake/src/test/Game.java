@@ -10,15 +10,14 @@ public class Game {
     private int width;
     private Snake s;
     private Apple a;
-    private boolean flag = true;
     private Random rand = new Random();
     private Frame frame;
 
-    public Game() {
+    public Game(Frame frame) {
         score = 0;
         height = 33;
         width = 80;
-        int[][] temp = { { 9, 4 }, { 9, 5 }, { 9, 6 }, { 9, 7 } };
+        int[][] temp = { { 9, 4 }, { 9, 5 }, { 9, 6 }, { 9, 7 }, { 9, 8 } };
         int[] temp1 = { 0, -1 };
 
         s = new Snake(temp, temp1);
@@ -43,57 +42,21 @@ public class Game {
         } while (f);
 
         a = new Apple(randA, randB);
-        frame = new Frame();
-        start();
+        // frame = new Frame();
+        this.frame = frame;
     }
 
-    public void start() {
-        Scanner input = new Scanner(System.in);
-        int[] direction = new int[2];
-        char key;
+    public boolean tick() {
+        s.take_step(width, height);
+        if (!s.check_bod_coll())
+            return false;
+        check_app_coll();
         render();
+        return true;
+    }
 
-        do {
-            key = input.next().charAt(0);
-            input.nextLine();
-            switch (key) {
-            case 'w': // up
-                direction[0] = 0;
-                direction[1] = -1;
-                break;
-            case 'a': // left
-                direction[0] = -1;
-                direction[1] = 0;
-                break;
-            case 's': // down
-                direction[0] = 0;
-                direction[1] = 1;
-                break;
-            case 'd': // right
-                direction[0] = 1;
-                direction[1] = 0;
-                break;
-            case 'f':
-                flag = false;
-                break;
-            default:
-                break;
-            }
-
-            if (check_valid_input(key)) {
-                s.set_direction(direction);
-            }
-
-            s.take_step(width, height);
-
-            if (!s.check_bod_coll())
-                break;
-
-            check_app_coll();
-
-            render();
-
-        } while (flag);
+    public void set_direction(int[] new_dir) {
+        s.set_direction(new_dir);
     }
 
     public boolean check_valid_input(char key) {
@@ -192,9 +155,9 @@ public class Game {
 
     }
 
-    public static void main(String[] args) {
-        Game g = new Game();
+    // public static void main(String[] args) {
+    // Game g = new Game();
 
-        System.out.println("GAME OVER!!!!!!!!!!!");
-    }
+    // System.out.println("GAME OVER!!!!!!!!!!!");
+    // }
 }
