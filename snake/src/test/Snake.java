@@ -1,20 +1,22 @@
 package snake.src.test;
 
-import java.util.ArrayList;
-
 public class Snake {
 
-    private ArrayList<snake_Bod> body = new ArrayList<snake_Bod>();
+    private body_Comp body;
     private int dirx, diry;
 
-    public Snake() {
-        int[][] temp = { { 9, 4 }, { 9, 5 }, { 9, 6 }, { 9, 7 }, { 9, 8 } };
-        for (int i = 0; i < temp.length; i++) {
-            body.add(new snake_Bod(temp[i][0], temp[i][1]));
+    public Snake(int x, int[] body_Array) {
+        body = new body_Comp();
+        for (int i = 0; i < body_Array.length; i++) {
+            body.add(new snake_Bod(x, body_Array[i]));
         }
 
         dirx = 0;
         diry = -1; // up
+    }
+
+    public int size() {
+        return body.size();
     }
 
     public boolean check_yx(int x, int y) {
@@ -57,8 +59,8 @@ public class Snake {
         if (newy >= max_y)
             newy -= max_y;
 
-        body.add(0, new snake_Bod(newx, newy));
-        body.remove(body.size() - 1);
+        body.move(new snake_Bod(newx, newy));
+        body.remove();
     }
 
     public boolean check_bod_coll() {
@@ -70,9 +72,9 @@ public class Snake {
         return true;
     }
 
-    public void set_direction(int[] new_direction) {
-        dirx = new_direction[0];
-        diry = new_direction[1];
+    public void set_direction(int newx, int newy) {
+        dirx = newx;
+        diry = newy;
     }
 
     public boolean check_head(int x, int y) {
@@ -90,11 +92,21 @@ public class Snake {
         return body.get(0).gety();
     }
 
-    public void add_body() {
+    public void add_body(int max_x, int max_y) {
         snake_Bod tail = body.get(body.size() - 1);
-        snake_Bod new_Bod = new snake_Bod(tail.getx() - dirx, tail.gety() - diry);
+        int newx = tail.getx() - dirx;
+        int newy = tail.gety() - diry;
 
-        body.add(body.size(), new_Bod);
+        if (newx <= 0)
+            newx += max_x;
+        if (newx >= max_x)
+            newx -= max_x;
+        if (newy <= 0)
+            newy += max_y;
+        if (newy >= max_y)
+            newy -= max_y;
+
+        body.add(new snake_Bod(newx, newy));
     }
 
     public int get_dirx() {
