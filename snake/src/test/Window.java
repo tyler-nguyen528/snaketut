@@ -26,15 +26,64 @@ class CustomOutputStream extends OutputStream {
     }
 }
 
+class P1_Control extends KeyAdapter {
+    private Controller con;
+
+    public P1_Control(Controller con) {
+        this.con = con;
+    }
+
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_W) {
+            con.w_Press();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_A) {
+            con.a_Press();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_S) {
+            con.s_Press();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_D) {
+            con.d_Press();
+        }
+    }
+}
+
+class P2_Control extends KeyAdapter {
+    private Controller con;
+
+    public P2_Control(Controller con) {
+        this.con = con;
+    }
+
+    public void keyPressed(KeyEvent e) {
+        if (e.getKeyCode() == KeyEvent.VK_UP) {
+            con.up_Press();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+            con.left_Press();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+            con.down_Press();
+        }
+        if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+            con.right_Press();
+        }
+    }
+}
+
 class Frame extends JFrame {
     Controller con;
-    Game g;
+
+    P1_Control wasd;
+    P2_Control arrows;
 
     JFrame frame = new JFrame("Snake");
-    JButton restart_Butt = new JButton();
-    JButton twoPlay_Butt = new JButton();
-    JButton hardMode_Butt = new JButton();
-    JButton normMode_Butt = new JButton();
+    JButton start_Butt = new JButton();
+    JButton oneNorm_Butt = new JButton();
+    JButton twoNorm_Butt = new JButton();
+    JButton oneHard_Butt = new JButton();
+    JButton twoHard_Butt = new JButton();
     JPanel buttonsPanel = new JPanel();
     JTextArea gameArea = new JTextArea();
     JPanel gamePanel = new JPanel();
@@ -43,52 +92,98 @@ class Frame extends JFrame {
     public Frame() {
         con = new Controller(this);
 
-        restart_Butt.setText("Start");
-        twoPlay_Butt.setText("Two Players");
-        hardMode_Butt.setText("Hard Mode");
-        normMode_Butt.setText("Normal Mode");
+        start_Butt.setText("Start");
+        oneNorm_Butt.setText("1P Normal");
+        twoNorm_Butt.setText("2P Normal");
+        oneHard_Butt.setText("1P Hard");
+        twoHard_Butt.setText("2P Hard");
 
-        restart_Butt.setBounds(125, 0, 120, 20);
-        twoPlay_Butt.setBounds(250, 0, 120, 20);
-        hardMode_Butt.setBounds(375, 0, 120, 20);
-        normMode_Butt.setBounds(500, 0, 120, 20);
+        start_Butt.setBounds(25, 0, 120, 20);
+        oneNorm_Butt.setBounds(180, 0, 120, 20);
+        twoNorm_Butt.setBounds(335, 0, 120, 20);
+        oneHard_Butt.setBounds(490, 0, 120, 20);
+        twoHard_Butt.setBounds(645, 0, 120, 20);
+
+        start_Butt.setEnabled(false);
 
         buttonsPanel.setLayout(null);
-        buttonsPanel.setBounds(0, 0, 785, 20);
+        buttonsPanel.setBounds(0, 0, 800, 20);
 
-        twoPlay_Butt.setEnabled(false);
-        hardMode_Butt.setEnabled(false);
-        normMode_Butt.setEnabled(false);
+        buttonsPanel.add(start_Butt);
+        buttonsPanel.add(oneNorm_Butt);
+        buttonsPanel.add(twoNorm_Butt);
+        buttonsPanel.add(oneHard_Butt);
+        buttonsPanel.add(twoHard_Butt);
 
-        buttonsPanel.add(restart_Butt);
-        buttonsPanel.add(twoPlay_Butt);
-        buttonsPanel.add(hardMode_Butt);
-        buttonsPanel.add(normMode_Butt);
-
-        restart_Butt.addActionListener(new ActionListener() {
+        start_Butt.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
-                restart_Butt.setText("Restart");
-                restart_Butt.setEnabled(false);
-                con.restartPressed();
+                start_Butt.setEnabled(false);
+                oneNorm_Butt.setEnabled(false);
+                twoNorm_Butt.setEnabled(false);
+                oneHard_Butt.setEnabled(false);
+                twoHard_Butt.setEnabled(false);
+                // start();
+                con.startPressed();
+            }
+        });
 
+        oneNorm_Butt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                gameArea.setText(null);
+                start_Butt.setEnabled(true);
+                oneNorm_Butt.setEnabled(false);
+                oneHard_Butt.setEnabled(true);
+                twoNorm_Butt.setEnabled(true);
+                twoHard_Butt.setEnabled(true);
+                System.out.println("One Player on Normal Mode Selected. Press Start!!");
+                con.one_Norm_Pressed();
             }
         });
-        gameArea.addKeyListener(new KeyAdapter() {
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_W) {
-                    con.w_Press();
-                }
-                if (e.getKeyCode() == KeyEvent.VK_A) {
-                    con.a_Press();
-                }
-                if (e.getKeyCode() == KeyEvent.VK_S) {
-                    con.s_Press();
-                }
-                if (e.getKeyCode() == KeyEvent.VK_D) {
-                    con.d_Press();
-                }
+
+        oneHard_Butt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                gameArea.setText(null);
+                start_Butt.setEnabled(true);
+                oneNorm_Butt.setEnabled(true);
+                oneHard_Butt.setEnabled(false);
+                twoNorm_Butt.setEnabled(true);
+                twoHard_Butt.setEnabled(true);
+                System.out.println("One Player on Hard Mode Selected. Press Start!!");
+                con.one_Hard_Pressed();
             }
         });
+
+        twoNorm_Butt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                gameArea.setText(null);
+                start_Butt.setEnabled(true);
+                oneNorm_Butt.setEnabled(true);
+                oneHard_Butt.setEnabled(true);
+                twoNorm_Butt.setEnabled(false);
+                twoHard_Butt.setEnabled(true);
+                System.out.println(
+                        "Two Players on Normal Mode Selected. \nTry to make the other player hit you! Press Start!!");
+                con.two_Norm_Pressed();
+            }
+        });
+
+        twoHard_Butt.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                gameArea.setText(null);
+                start_Butt.setEnabled(true);
+                oneNorm_Butt.setEnabled(true);
+                oneHard_Butt.setEnabled(true);
+                twoNorm_Butt.setEnabled(true);
+                twoHard_Butt.setEnabled(false);
+                System.out.println(
+                        "Two Players on Hard Mode Selected. \nTry to make the other player hit you! Press Start!!");
+                con.two_Hard_Pressed();
+            }
+        });
+
+        wasd = new P1_Control(con);
+        arrows = new P2_Control(con);
+
         frame.add(buttonsPanel);
 
         gameArea.setLayout(null);
@@ -96,7 +191,7 @@ class Frame extends JFrame {
         gameArea.setBackground(new java.awt.Color(255, 255, 255));
         gameArea.setBorder(BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         gameArea.setEditable(false);
-        gameArea.setFont(new Font("monospaced", Font.PLAIN, 12));
+        gameArea.setFont(new Font("monospaced", Font.BOLD, 25));
 
         System.setOut(printStream);
         gamePanel.add(gameArea);
@@ -108,6 +203,25 @@ class Frame extends JFrame {
         frame.setResizable(false);
         frame.setVisible(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    public void end() {
+        gameArea.removeKeyListener(wasd);
+        start_Butt.setEnabled(false);
+        oneNorm_Butt.setEnabled(true);
+        twoNorm_Butt.setEnabled(true);
+        oneHard_Butt.setEnabled(true);
+        twoHard_Butt.setEnabled(true);
+    }
+
+    public void end2() {
+        gameArea.removeKeyListener(wasd);
+        gameArea.removeKeyListener(arrows);
+        start_Butt.setEnabled(false);
+        oneNorm_Butt.setEnabled(true);
+        twoNorm_Butt.setEnabled(true);
+        oneHard_Butt.setEnabled(true);
+        twoHard_Butt.setEnabled(true);
     }
 }
 
@@ -127,46 +241,122 @@ class Threadtest implements Runnable {
             } catch (InterruptedException e) {
             }
         }
-        System.out.println("GAME OVER!!!!!!!!");
+        g.print_Over();
     }
 }
 
 class Controller {
     private Game g;
+    private Game_State Gs;
+    Frame f;
     Thread t;
 
     public Controller(Frame f) {
-        g = new Game(f);
+        this.f = f;
     }
 
-    public void restartPressed() {
+    public void startPressed() {
+        g = Gs.execute(f);
         t = new Thread(new Threadtest(g));
         t.start();
+    }
 
+    public void one_Norm_Pressed() {
+        Gs = new Normal_1P_State();
+    }
+
+    public void two_Norm_Pressed() {
+        Gs = new Normal_2P_State();
+    }
+
+    public void one_Hard_Pressed() {
+        Gs = new Hard_1P_State();
+    }
+
+    public void two_Hard_Pressed() {
+        Gs = new Hard_2P_State();
     }
 
     public void w_Press() {
         int[] temp = { 0, -1 };
-        if (g.check_valid_input('w'))
-            g.set_direction(temp);
+        g.check_valid_input(1, temp);
     }
 
     public void a_Press() {
         int[] temp = { -1, 0 };
-        if (g.check_valid_input('a'))
-            g.set_direction(temp);
+        g.check_valid_input(1, temp);
     }
 
     public void s_Press() {
         int[] temp = { 0, 1 };
-        if (g.check_valid_input('s'))
-            g.set_direction(temp);
+        g.check_valid_input(1, temp);
     }
 
     public void d_Press() {
         int[] temp = { 1, 0 };
-        if (g.check_valid_input('d'))
-            g.set_direction(temp);
+        g.check_valid_input(1, temp);
+    }
+
+    public void up_Press() {
+        int[] temp = { 0, -1 };
+        g.check_valid_input(2, temp);
+    }
+
+    public void left_Press() {
+        int[] temp = { -1, 0 };
+        g.check_valid_input(2, temp);
+    }
+
+    public void down_Press() {
+        int[] temp = { 0, 1 };
+        g.check_valid_input(2, temp);
+    }
+
+    public void right_Press() {
+        int[] temp = { 1, 0 };
+        g.check_valid_input(2, temp);
+    }
+}
+
+interface Game_State {
+    public Game execute(Frame f);
+}
+
+class Normal_1P_State implements Game_State {
+    public Game execute(Frame f) {
+        int[] body_Array = { 4, 5, 6, 7, 8 };
+        Game g = new Game_1P(f, body_Array);
+        f.gameArea.addKeyListener(f.wasd);
+        return g;
+    }
+}
+
+class Hard_1P_State implements Game_State {
+    public Game execute(Frame f) {
+        int[] body_Array = { 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+        Game g = new Game_1P(f, body_Array);
+        f.gameArea.addKeyListener(f.wasd);
+        return g;
+    }
+}
+
+class Normal_2P_State implements Game_State {
+    public Game execute(Frame f) {
+        int[] body_Array = { 4, 5, 6, 7, 8 };
+        Game g = new Game_2P(f, body_Array);
+        f.gameArea.addKeyListener(f.wasd);
+        f.gameArea.addKeyListener(f.arrows);
+        return g;
+    }
+}
+
+class Hard_2P_State implements Game_State {
+    public Game execute(Frame f) {
+        int[] body_Array = { 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+        Game g = new Game_2P(f, body_Array);
+        f.gameArea.addKeyListener(f.wasd);
+        f.gameArea.addKeyListener(f.arrows);
+        return g;
     }
 }
 
