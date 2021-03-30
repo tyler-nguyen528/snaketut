@@ -1,184 +1,119 @@
-package test;
+package snake.src.test;
 
-import java.util.Scanner;
-import java.util.Random;
+import javax.swing.text.BadLocationException;
 
-public class Game {
+public abstract class Game {
 
-    private int score;
-    private int height;
-    private int width;
-    private Snake s;
-    private Apple a;
-    private boolean flag = true;
-    private Random rand = new Random();
+    protected int score;
+    protected int height;
+    protected int width;
+    protected Apple a;
+    protected Frame frame;
 
-    public Game(int height, int width) {
-        score = 0;
-        this.height = height;
-        this.width = width;
-        int[][] temp = { { 9, 4 }, { 9, 5 }, { 9, 6 }, { 9, 7 } };
-        int[] temp1 = { 0, -1 };
+    abstract boolean tick();
 
-        s = new Snake(temp, temp1);
-
-        int randA, randB;
-        boolean f = true;
-
-        do {
-            randA = rand.nextInt(width);
-            if (!s.check_x(randA)) {
-                f = false;
-            }
-        } while (f);
-
-        f = true;
-
-        do {
-            randB = rand.nextInt(height);
-            if (!s.check_y(randB)) {
-                f = false;
-            }
-        } while (f);
-
-        a = new Apple(randA, randB);
-        start();
+    public void set_direction(Snake s, int[] new_dir) {
+        s.set_direction(new_dir);
     }
 
-    public void start() {
-        Scanner input = new Scanner(System.in);
-        int[] direction = new int[2];
-        char key;
-        render();
+    public boolean test_input(Snake s, int x, int y) {
+        int curr_dirx = s.get_dirx(), curr_diry = s.get_diry();
 
-        do {
-            key = input.next().charAt(0);
-            input.nextLine();
-            switch (key) {
-            case 'w': // up
-                direction[0] = 0;
-                direction[1] = -1;
-                break;
-            case 'a': // left
-                direction[0] = -1;
-                direction[1] = 0;
-                break;
-            case 's': // down
-                direction[0] = 0;
-                direction[1] = 1;
-                break;
-            case 'd': // right
-                direction[0] = 1;
-                direction[1] = 0;
-                break;
-            case 'f':
-                flag = false;
-                break;
-            default:
-                break;
-            }
-
-            if (check_valid_input(key)) {
-                s.set_direction(direction);
-            }
-
-            s.take_step(width, height);
-
-            if (!s.check_bod_coll())
-                break;
-
-            check_app_coll();
-
-            render();
-
-        } while (flag);
-    }
-
-    public boolean check_valid_input(char key) {
-        int[] curr_dir = s.get_dir();
-
-        switch (key) {
-        case 'w':
-            if (curr_dir[1] == 1) {
+        if (x == 0 && y == -1) { // input = up
+            if (curr_diry == 1) // check if current direction is going down
                 return false;
-            } else {
+            else
                 return true;
-            }
-        case 'a':
-            if (curr_dir[0] == 1) {
+        } else if (x == 0 && y == 1) { // input = down
+            if (curr_diry == -1) // check if current direction is going up
                 return false;
-            } else {
+            else
                 return true;
-            }
-
-        case 's':
-            if (curr_dir[1] == -1) {
+        } else if (x == 1 && y == 0) { // input = right
+            if (curr_dirx == -1) // check if current direction is going left
                 return false;
-            } else {
+            else
                 return true;
-            }
-        case 'd':
-            if (curr_dir[0] == -1) {
+        } else if (x == -1 && y == 0) { // input = left
+            if (curr_dirx == 1) // check if current direction is going right
                 return false;
-            } else {
+            else
                 return true;
-            }
-        default:
-            return false;
         }
+        return false;
     }
 
-    public void check_app_coll() {
-        if (s.get_head_x() == a.get_x() && s.get_head_y() == a.get_y()) {
+    public void check_app_coll(Snake s) {
+        if (s.get_head_x() == a.getx() && s.get_head_y() == a.gety()) {
             score++;
-            int new_x, new_y;
-            boolean f = true;
 
-            do {
-                new_x = rand.nextInt(width);
-                if (!s.check_x(new_x)) {
-                    f = false;
-                }
-            } while (f);
+            a.set_Pos();
 
-            f = true;
-
-            do {
-                new_y = rand.nextInt(height);
-                if (!s.check_y(new_y)) {
-                    f = false;
-                }
-            } while (f);
-
-            a.set_x(new_x);
-            a.set_y(new_y);
-            s.add_body();
+            s.add_body(width, height);
         }
     }
 
-    public int[][] board_matrix() {
-        int[][] mat = { {} };
+    public void print_Over() {
+        // frame.gameArea.setText(null);
+        System.out.println("GAME OVER!!!!!!!!");
+        frame.end();
+    }
 
-        return mat;
+    abstract void check_valid_input(int p_num, int[] dir);
+
+    abstract void render();
+}
+
+class Game_1P extends Game {
+    private Snake player;
+    private int newdirx, newdiry;
+
+    public Game_1P(Frame frame, int[] body) {
+        score = 0;
+        height = 15;
+        width = 30;
+
+        player = new Snake(9, body);
+        this.frame = frame;
+        a = new Apple_P1(player, width, height);
+    }
+
+    public void check_valid_input(int p_num, int[] dir) {
+        if (test_input(player, dir[0], dir[1])) {
+            newdirx = dir[0];
+            newdiry = dir[1];
+        }
+    }
+
+    public boolean tick() {
+        if (test_input(player, newdirx, newdiry))
+            player.set_direction(newdirx, newdiry);
+        player.take_step(width, height);
+        if (!player.check_bod_coll())
+            return false;
+        check_app_coll(player);
+        render();
+        return true;
     }
 
     public void render() {
+        frame.gameArea.setText(null);
         System.out.print("+");
         for (int i = 0; i < width; i++) {
             System.out.print("-");
         }
         System.out.print("+");
-        System.out.println("\t\tScore: " + score);
+        System.out.println("\tScore: " + score);
 
         for (int i = 0; i < height; i++) {
             System.out.print("|");
 
             for (int j = 0; j < width; j++) {
-                if (s.check_head(j, i)) {
+                if (player.check_head(j, i)) {
                     System.out.print("x");
-                } else if (s.check_yx(j, i)) {
+                } else if (player.check_yx(j, i)) {
                     System.out.print("o");
-                } else if (a.get_x() == j && a.get_y() == i) {
+                } else if (a.getx() == j && a.gety() == i) {
                     System.out.print("A");
                 } else {
                     System.out.print(" ");
@@ -191,13 +126,141 @@ public class Game {
         for (int i = 0; i < width; i++) {
             System.out.print("-");
         }
-        System.out.println("+");
+        System.out.print("+");
+    }
+
+}
+
+class Game_2P extends Game {
+    private Snake p1, p2;
+    private int p1_newdirx, p1_newdiry, p2_newdirx, p2_newdiry, special_flag;
+
+    public Game_2P(Frame frame, int[] body) {
+        score = 0;
+        height = 15;
+        width = 30;
+
+        p1 = new Snake(4, body);
+        p2 = new Snake(11, body);
+        this.frame = frame;
+        a = new Apple_P2(p1, p2, width, height);
+    }
+
+    public void check_valid_input(int p_num, int[] dir) {
+        if (p_num == 1)
+            if (test_input(p1, dir[0], dir[1])) {
+                p1_newdirx = dir[0];
+                p1_newdiry = dir[1];
+            }
+
+        if (p_num == 2)
+            if (test_input(p2, dir[0], dir[1])) {
+                p2_newdirx = dir[0];
+                p2_newdiry = dir[1];
+            }
+    }
+
+    public boolean tick() {
+        if (test_input(p1, p1_newdirx, p1_newdiry))
+            p1.set_direction(p1_newdirx, p1_newdiry);
+        p1.take_step(width, height);
+
+        if (test_input(p2, p2_newdirx, p2_newdiry))
+            p2.set_direction(p2_newdirx, p2_newdiry);
+        p2.take_step(width, height);
+
+        if (!p1.check_bod_coll()) {
+            special_flag = 1;
+            return false;
+        }
+
+        if (!p1.check_bod_coll()) {
+            special_flag = 2;
+            return false;
+        }
+
+        check_app_coll(p1);
+        check_app_coll(p2);
+
+        if (check_player_coll(p1, p2)) {
+            special_flag = 3;
+            return false;
+        }
+
+        if (check_player_coll(p2, p1)) {
+            special_flag = 4;
+            return false;
+        }
+
+        render();
+        return true;
+    }
+
+    public void print_Over() {
+        try {
+            switch (special_flag) {
+            case 1:
+                frame.gameArea.replaceRange("Player 1 died, Player 2 Wins!!!", 0, frame.gameArea.getLineEndOffset(0));
+                break;
+            case 2:
+                frame.gameArea.replaceRange("Player 2 died, Player 1 Wins!!!", 0, frame.gameArea.getLineEndOffset(0));
+                break;
+            case 3:
+                frame.gameArea.replaceRange("Player 1 hit Player 2! Player 2 Wins!!!", 0,
+                        frame.gameArea.getLineEndOffset(0));
+                break;
+            case 4:
+                frame.gameArea.replaceRange("Player 2 hit Player 1! Player 1 Wins!!!", 0,
+                        frame.gameArea.getLineEndOffset(0));
+                break;
+            }
+            frame.end2();
+        } catch (Exception e) {
+        }
 
     }
 
-    public static void main(String[] args) {
-        Game g = new Game(10, 20);
+    public boolean check_player_coll(Snake s1, Snake s2) {
+        for (int i = 0; i < s2.size(); i++) {
+            if (s2.check_yx(s1.get_head_x(), s1.get_head_y()))
+                return true;
+        }
+        return false;
+    }
 
-        System.out.println("GAME OVER!!!!!!!!!!!");
+    public void render() {
+        frame.gameArea.setText(null);
+        System.out.print("+");
+        for (int i = 0; i < width; i++) {
+            System.out.print("-");
+        }
+        System.out.println("+");
+
+        for (int i = 0; i < height; i++) {
+            System.out.print("|");
+
+            for (int j = 0; j < width; j++) {
+                if (p1.check_head(j, i)) {
+                    System.out.print("x");
+                } else if (p2.check_head(j, i)) {
+                    System.out.print("y");
+                } else if (p1.check_yx(j, i)) {
+                    System.out.print("o");
+                } else if (p2.check_yx(j, i)) {
+                    System.out.print("o");
+                } else if (a.getx() == j && a.gety() == i) {
+                    System.out.print("A");
+                } else {
+                    System.out.print(" ");
+                }
+            }
+            System.out.println("|");
+        }
+
+        System.out.print("+");
+        for (int i = 0; i < width; i++) {
+            System.out.print("-");
+        }
+        System.out.print("+");
     }
 }
